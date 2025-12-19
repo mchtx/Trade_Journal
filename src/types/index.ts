@@ -107,3 +107,42 @@ export interface Settings {
   defaultRiskRewardThreshold: number;
   excludedDates: string[]; // YYYY-MM-DD formatında
 }
+
+// ==================== COMPOUND INTEREST CALCULATOR ====================
+
+export type Currency = 'USD' | 'EUR' | 'TRY' | 'GBP' | 'JPY' | 'CHF' | 'CAD' | 'AUD';
+export type ReturnPeriod = 'weekly' | 'monthly' | 'quarterly' | 'annually';
+export type ContributionType = 'none' | 'addition' | 'withdrawal';
+
+export interface CalculatorInput {
+  currency: Currency;
+  principal: number; // Başlangıç yatırımı
+  returnRate: number; // Getiri oranı (%)
+  returnPeriod: ReturnPeriod; // Getiri oranının hangi periyoda göre olduğu
+  periodCount: number; // Kaç periyot (hafta, ay, yıl)
+  contributionType: ContributionType; // Ekleme/Çekim türü
+  contributionAmount?: number; // Her periyotta eklenecek/çekilecek miktar
+}
+
+export interface CalculatorYearlyData {
+  year: number;
+  month: number;
+  periodsCompleted: number;
+  balance: number;
+  interestEarned: number;
+  cumulativeInterest: number;
+  totalContributed: number;
+  totalWithdrawn: number;
+}
+
+export interface CalculatorResult {
+  input: CalculatorInput;
+  finalBalance: number;
+  totalInterestEarned: number;
+  totalPrincipalInvested: number;
+  totalReturnPercent: number;
+  yearlyData: CalculatorYearlyData[];
+  calculatedAt: string;
+  id?: string; // Supabase'den dönen ID
+  created_at?: string; // Supabase'den dönen timestamp
+}

@@ -38,6 +38,15 @@ Profesyonel traders için geliştirilmiş, %100 yüzde bazlı analitik yapan bir
 - 🔄 Tam yedek alma
 - 🌙 Dark/Light Mode desteği
 
+### 6. **💰 Bileşik Faiz Hesaplayıcı (ExtraCalculator)**
+- ✅ Başlangıç yatırımı ve getiri oranı parametreleri
+- ✅ Farklı bileşik frekansları (günlük, aylık, üç aylık, yıllık)
+- ✅ Düzenli ekleme/çekim simülasyonu
+- ✅ Yıllık detaylı analiz tablosu
+- ✅ Grafik görselleştirme (eğri, bar chart)
+- ✅ Geçmiş hesaplamaları kaydetme (son 50)
+- ✅ 8 farklı para birimi desteği (USD, EUR, TRY, GBP, JPY, CHF, CAD, AUD)
+
 ## 🛠️ Teknoloji Stack
 
 - **Frontend**: React 18 + TypeScript
@@ -53,18 +62,22 @@ Profesyonel traders için geliştirilmiş, %100 yüzde bazlı analitik yapan bir
 
 ```
 src/
-├── features/              # Feature-based klasörler
-│   ├── dashboard/        # Dashboard & Analytics
-│   ├── trades/           # CRUD İşlemleri
-│   ├── analytics/        # Detaylı Analitikler
-│   ├── daily-journal/    # Günlük Günlük
-│   ├── rules/            # Trading Kuralları
-│   └── settings/         # Ayarlar & Veri Yönetimi
-├── components/           # Reusable Komponenler
-├── hooks/                # Custom Hooks
-├── utils/                # Saf hesaplama fonksiyonları
-├── context/              # Zustand Store
-└── types/                # TypeScript Interfaces
+├── features/                    # Feature-based klasörler
+│   ├── dashboard/               # Dashboard & Analytics
+│   ├── trades/                  # CRUD İşlemleri
+│   ├── analytics/               # Detaylı Analitikler
+│   ├── daily-journal/           # Günlük Günlük
+│   ├── rules/                   # Trading Kuralları
+│   ├── extra-calculator/        # 💰 Bileşik Faiz Hesaplayıcı
+│   │   └── components/          # Form, Tablo, Grafik, vb.
+│   └── settings/                # Ayarlar & Veri Yönetimi
+├── components/                  # Reusable Komponenler
+├── hooks/                       # Custom Hooks (useCalculator, useAnalytics)
+├── utils/                       # Saf hesaplama fonksiyonları
+│   ├── calculations.ts          # Trade hesaplamaları
+│   └── compoundCalculations.ts  # Bileşik faiz hesaplamaları
+├── context/                     # Zustand Store
+└── types/                       # TypeScript Interfaces
 ```
 
 ## 🚀 Başlangıç
@@ -186,6 +199,16 @@ colors: {
 3. **Olağandışı günleri işaretleyin** - İstatistikleri temiz tutun
 4. **Kuralları sabitleyin** - Trading sırasında hızlı başvurun
 5. **Düzenli yedek alın** - JSON'u indirip saklayın
+6. **Hesaplayıcı ile planlama yapın** - Emeklilik/tasarruf hedeflerini belirleyin
+
+## 📖 Ek Dokümantasyon
+
+- **[CALCULATOR.md](./CALCULATOR.md)** - Bileşik Faiz Hesaplayıcı detaylı rehber
+- **[CALCULATOR_QUICKSTART.md](./CALCULATOR_QUICKSTART.md)** - Hızlı başlangıç ve örnekler
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Teknik mimari detayları
+- **[QUICKSTART.md](./QUICKSTART.md)** - Genel hızlı başlangıç
+- **[INSTALLATION.md](./INSTALLATION.md)** - Kurulum rehberi
+- **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - Proje özeti
 
 ## 📞 Destek
 

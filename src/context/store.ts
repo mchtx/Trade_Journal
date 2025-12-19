@@ -1,6 +1,12 @@
 import { create } from 'zustand';
-import { Trade, Rule, Settings } from '../types';
+import { Trade, Rule, Settings, CalculatorInput, CalculatorResult } from '../types';
 import { tradesStorage, rulesStorage, settingsStorage } from '@utils/storage';
+import {
+  saveCalculatorResult,
+  getCalculatorResults,
+  deleteCalculatorResult,
+  initializeSession,
+} from '@lib/supabase';
 
 interface TradeStore {
   trades: Trade[];
@@ -167,5 +173,109 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     settingsStorage.reset();
     const settings = settingsStorage.get();
     set({ settings });
+  },
+}));
+
+// ==================== CALCULATOR STORE ====================
+
+interface CalculatorStore {
+  userId: string | null;
+  results: CalculatorResult[];
+  currentInput: CalculatorInput;
+  isLoading: boolean;
+  error: string | null;
+  initUser: () => Promise<void>;
+  setCurrentInput: (input: CalculatorInput) => void;
+  addResult: (result: CalculatorResult) => Promise<void>;
+  loadResults: () => Promise<void>;
+  getResults: () => CalculatorResult[];
+  deleteResult: (id: string) => Promise<void>;
+}
+
+export const useCalculatorStore = create<CalculatorStore>((set, get) => ({
+  userId: null,
+  results: [],
+  currentInput: {
+    currency: 'TRY',
+    principal: 10000,
+    returnRate: 4,
+    returnPeriod: 'monthly',
+    periodCount: 12,
+    contributionType: 'none',
+  },
+  isLoading: false,
+  error: null,
+
+  initUser: async () => {
+    try {
+      set({ isLoading: true });
+      const userId = await initializeSession();
+      set({ userId });
+      // Verileri Supabase'ten yükle
+      await get().loadResults();
+    } catch (error) {
+      console.error('User initialization error:', error);
+      set({ error: 'Bağlantı hatası' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  setCurrentInput: (input) => {
+    set({ currentInput: input });
+  },
+
+  addResult: async (result) => {
+    try {
+      const userId = get().userId;
+      if (!userId) throw new Error('User not initialized');
+
+      set({ isLoading: true });
+      await saveCalculatorResult(userId, result);
+
+      // Verileri yeniden yükle
+      await get().loadResults();
+      set({ error: null });
+    } catch (error) {
+      console.error('Error saving result:', error);
+      set({ error: 'Veri kayıt edilemedi' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  loadResults: async () => {
+    try {
+      const userId = get().userId;
+      if (!userId) return;
+
+      set({ isLoading: true });
+      const data = await getCalculatorResults(userId);
+      set({ results: data });
+    } catch (error) {
+      console.error('Error loading results:', error);
+      set({ error: 'Veriler yüklenemedi' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  getResults: () => {
+    return get().results;
+  },
+
+  deleteResult: async (id) => {
+    try {
+      set({ isLoading: true });
+      await deleteCalculatorResult(id);
+      // Verileri yeniden yükle
+      await get().loadResults();
+      set({ error: null });
+    } catch (error) {
+      console.error('Error deleting result:', error);
+      set({ error: 'Veri silinemedi' });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 }));

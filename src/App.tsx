@@ -2,15 +2,17 @@ import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom'
 import theme from './theme'
 import Routes from './routes'
-import { useSettingsStore } from '@context/store'
+import { useSettingsStore, useCalculatorStore } from '@context/store'
 import { useEffect } from 'react'
 
 function App() {
   const { loadSettings } = useSettingsStore()
+  const { initUser } = useCalculatorStore()
 
   useEffect(() => {
     loadSettings()
-  }, [loadSettings])
+    initUser() // Supabase'e bağlan
+  }, [loadSettings, initUser])
 
   return (
     <ChakraProvider theme={theme}>

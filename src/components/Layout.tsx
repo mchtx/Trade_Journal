@@ -26,6 +26,7 @@ const navItems = [
   { label: 'Analitik', path: '/analytics' },
   { label: 'Günlük', path: '/daily-journal' },
   { label: 'Kurallar', path: '/rules' },
+  { label: '💰 Hesaplayıcı', path: '/calculator' },
   { label: 'Ayarlar', path: '/settings' },
 ]
 
