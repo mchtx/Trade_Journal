@@ -1,5 +1,4 @@
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
-import { BrowserRouter } from 'react-router-dom'
 import theme from './theme'
 import Routes from './routes'
 import { useSettingsStore, useCalculatorStore } from '@context/store'
@@ -11,15 +10,13 @@ function App() {
 
   useEffect(() => {
     loadSettings()
-    initUser() // Supabase'e bağlan
+    initUser()
   }, [loadSettings, initUser])
 
   return (
     <ChakraProvider theme={theme}>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <BrowserRouter>
-        <Routes />
-      </BrowserRouter>
+      <Routes />
     </ChakraProvider>
   )
 }
