@@ -8,12 +8,12 @@ import {
   SimpleGrid,
   VStack,
   HStack,
-  useColorModeValue,
   Tab,
   Tabs,
   TabList,
   TabPanel,
   TabPanels,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { useTradeStore } from '@context/store'
 import { useWeekDayStats, useOptimalExit } from '@hooks/useAnalytics'
@@ -26,39 +26,60 @@ export default function Analytics() {
   const weekDayStats = useWeekDayStats(trades)
   const exitAnalysis = useOptimalExit(trades)
 
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
+  const tabColor = useColorModeValue('gray.500', 'gray.400');
+  const selectedColor = 'white';
+  const selectedBg = 'brand.500';
 
   return (
-    <VStack spacing={8} align="stretch">
-      <Heading>Detaylı Analitik</Heading>
+    <VStack spacing={6} align="stretch">
+      <Heading size="lg" letterSpacing="tight">ADVANCED ANALYTICS</Heading>
 
-      <Tabs variant="soft-rounded" colorScheme="brand">
-        <TabList>
-          <Tab>Haftanın Günleri</Tab>
-          <Tab>Optimum Çıkış</Tab>
-          <Tab>Risk/Ödül</Tab>
+      <Tabs variant="soft-rounded" colorScheme="brand" isLazy>
+        <TabList mb={4}>
+          <Tab 
+            color={tabColor} 
+            _selected={{ color: selectedColor, bg: selectedBg }}
+            mr={2}
+            fontWeight="medium"
+          >
+            DAILY PERFORMANCE
+          </Tab>
+          <Tab 
+            color={tabColor} 
+            _selected={{ color: selectedColor, bg: selectedBg }}
+            mr={2}
+            fontWeight="medium"
+          >
+            OPTIMAL EXIT
+          </Tab>
+          <Tab 
+            color={tabColor} 
+            _selected={{ color: selectedColor, bg: selectedBg }}
+            fontWeight="medium"
+          >
+            RISK DISTRIBUTION
+          </Tab>
         </TabList>
 
         <TabPanels>
-          <TabPanel>
-            <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <TabPanel px={0}>
+            <Card>
               <CardBody>
                 <WeekDayAnalyticsView stats={weekDayStats} />
               </CardBody>
             </Card>
           </TabPanel>
 
-          <TabPanel>
-            <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <TabPanel px={0}>
+            <Card>
               <CardBody>
                 <OptimalExitAnalysis analysis={exitAnalysis} />
               </CardBody>
             </Card>
           </TabPanel>
 
-          <TabPanel>
-            <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <TabPanel px={0}>
+            <Card>
               <CardBody>
                 <RiskRewardDistribution trades={trades} />
               </CardBody>

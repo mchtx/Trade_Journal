@@ -1,4 +1,4 @@
-import { Box, Heading, Card, CardBody, useColorModeValue } from '@chakra-ui/react'
+import { Box, Heading, Card, CardBody, useColorModeValue, Container } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import TradeForm from './TradeForm'
 
@@ -12,13 +12,13 @@ export default function EditTrade() {
   }
 
   return (
-    <Box maxW="600px">
-      <Heading mb={6}>İşlem Düzenle</Heading>
-      <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
-        <CardBody>
+    <Container maxW="container.xl">
+      <Heading mb={6} size="lg" letterSpacing="tight">İŞLEMİ DÜZENLE</Heading>
+      <Card bg={bgColor} borderColor={borderColor} borderWidth="1px" variant="outline">
+        <CardBody p={0}>
           <TradeForm tradeId={id} />
         </CardBody>
       </Card>
-    </Box>
+    </Container>
   )
 }

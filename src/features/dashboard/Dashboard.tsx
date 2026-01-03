@@ -12,9 +12,11 @@ import {
   CardBody,
   HStack,
   Button,
-  useColorModeValue,
-  Select,
   VStack,
+  Text,
+  Badge,
+  Icon,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useTradeStore } from '@context/store'
@@ -27,6 +29,7 @@ import PerformanceChart from './components/PerformanceChart'
 import WeekDayStatsChart from './components/WeekDayStatsChart'
 import HourlyPerformanceChart from './components/HourlyPerformanceChart'
 import TopTradesChart from './components/TopTradesChart'
+import { FiTrendingUp, FiTrendingDown, FiActivity, FiTarget } from 'react-icons/fi'
 
 export default function Dashboard() {
   const { trades } = useTradeStore()
@@ -36,124 +39,159 @@ export default function Dashboard() {
   const weekDayStats = useWeekDayStats(trades)
   const hourlyPerf = useHourlyPerformance(trades)
 
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
-
   const getStatColor = (value: number) => {
-    if (value > 0) return 'green'
-    if (value < 0) return 'red'
-    return 'gray'
+    if (value > 0) return 'trade.profit'
+    if (value < 0) return 'trade.loss'
+    return 'gray.400'
   }
 
+  const periodBg = useColorModeValue('gray.100', 'whiteAlpha.50')
+  const headingColor = useColorModeValue('gray.600', 'gray.400')
+  const labelColor = useColorModeValue('gray.600', 'gray.400')
+  const subTextColor = useColorModeValue('gray.500', 'gray.500')
+
   return (
-    <VStack spacing={8} align="stretch">
-      {/* Başlık ve Dönem Seçimi */}
-      <HStack justify="space-between">
-        <Heading size="lg">Dashboard</Heading>
-        <HStack spacing={2}>
+    <VStack spacing={6} align="stretch">
+      {/* Header Section */}
+      <HStack justify="space-between" align="center">
+        <VStack align="start" spacing={1}>
+          <Heading size="lg" letterSpacing="tight">PİYASA GENEL BAKIŞ</Heading>
+          <HStack>
+            <Badge colorScheme="green" variant="subtle" px={2} borderRadius="full">CANLI</Badge>
+            <Text fontSize="xs" color={subTextColor} fontFamily="mono">
+              SON GÜNCELLEME: {new Date().toLocaleTimeString()}
+            </Text>
+          </HStack>
+        </VStack>
+        
+        <HStack spacing={2} bg={periodBg} p={1} borderRadius="lg">
           {(['week', 'month', 'all'] as const).map((p) => (
             <Button
               key={p}
               size="sm"
-              variant={period === p ? 'solid' : 'outline'}
-              colorScheme="brand"
+              variant={period === p ? 'solid' : 'ghost'}
+              colorScheme={period === p ? 'brand' : 'gray'}
               onClick={() => setPeriod(p)}
+              fontSize="xs"
+              textTransform="uppercase"
             >
-              {p === 'week' ? 'Hafta' : p === 'month' ? 'Ay' : 'Tümü'}
+              {p === 'week' ? 'Hafta' : p === 'month' ? 'Ay' : 'Tüm Zamanlar'}
             </Button>
           ))}
         </HStack>
       </HStack>
 
-      {/* Özet Kartları */}
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
-        <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+      {/* Primary Stats - High Hierarchy */}
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
+        <Card variant="outline" borderColor={stats.totalReturnPercent >= 0 ? 'trade.profit' : 'trade.loss'} borderWidth="0px" borderLeftWidth="4px">
           <CardBody>
             <Stat>
-              <StatLabel>Toplam Getiri %</StatLabel>
-              <StatNumber color={getStatColor(stats.totalReturnPercent)}>
-                {stats.totalReturnPercent.toFixed(2)}%
+              <HStack justify="space-between" mb={2}>
+                <StatLabel color={labelColor}>Net K/Z</StatLabel>
+                <Icon as={stats.totalReturnPercent >= 0 ? FiTrendingUp : FiTrendingDown} color={getStatColor(stats.totalReturnPercent)} />
+              </HStack>
+              <StatNumber fontSize="3xl" color={getStatColor(stats.totalReturnPercent)}>
+                {stats.totalReturnPercent > 0 ? '+' : ''}{stats.totalReturnPercent.toFixed(2)}%
               </StatNumber>
-              <StatHelpText>{stats.tradeCount} işlem</StatHelpText>
+              <StatHelpText mb={0} fontSize="xs" color={subTextColor}>
+                {stats.tradeCount} GERÇEKLEŞEN İŞLEM
+              </StatHelpText>
             </Stat>
           </CardBody>
         </Card>
 
-        <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+        <Card>
           <CardBody>
             <Stat>
-              <StatLabel>Win Rate %</StatLabel>
-              <StatNumber color="blue.500">
+              <HStack justify="space-between" mb={2}>
+                <StatLabel>Kazanma Oranı</StatLabel>
+                <Icon as={FiActivity} color="brand.400" />
+              </HStack>
+              <StatNumber fontSize="3xl" color="brand.400">
                 {stats.winRate.toFixed(2)}%
               </StatNumber>
-              <StatHelpText>
-                {stats.winCount} / {stats.lossCount} / {stats.breakevenCount}
+              <StatHelpText mb={0} fontSize="xs">
+                <Text as="span" color="trade.profit">{stats.winCount} K</Text> / 
+                <Text as="span" color="trade.loss"> {stats.lossCount} Z</Text> / 
+                <Text as="span" color="gray.500"> {stats.breakevenCount} BB</Text>
               </StatHelpText>
             </Stat>
           </CardBody>
         </Card>
 
-        <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+        <Card>
           <CardBody>
             <Stat>
-              <StatLabel>Ortalama R:R</StatLabel>
-              <StatNumber>
+              <HStack justify="space-between" mb={2}>
+                <StatLabel>Risk : Ödül</StatLabel>
+                <Icon as={FiTarget} color="purple.400" />
+              </HStack>
+              <StatNumber fontSize="3xl" color="purple.400">
                 1:{stats.averageRiskRewardRatio.toFixed(2)}
               </StatNumber>
-              <StatHelpText>
-                Best: {stats.bestTradePercent.toFixed(2)}%
+              <StatHelpText mb={0} fontSize="xs" color="gray.500">
+                EN İYİ İŞLEM: <Text as="span" color="trade.profit">+{stats.bestTradePercent.toFixed(2)}%</Text>
               </StatHelpText>
             </Stat>
           </CardBody>
         </Card>
 
-        <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+        <Card>
           <CardBody>
             <Stat>
-              <StatLabel>Expectancy %</StatLabel>
-              <StatNumber color={getStatColor(stats.expectancyPercent)}>
+              <HStack justify="space-between" mb={2}>
+                <StatLabel>Beklenti</StatLabel>
+                <Badge colorScheme={stats.expectancyPercent > 0 ? 'green' : 'red'}>
+                  {stats.expectancyPercent > 0 ? 'POZİTİF' : 'NEGATİF'}
+                </Badge>
+              </HStack>
+              <StatNumber fontSize="3xl" color={getStatColor(stats.expectancyPercent)}>
                 {stats.expectancyPercent.toFixed(2)}%
               </StatNumber>
-              <StatHelpText>
-                Streak: {stats.maxWinStreak} / {stats.maxLossStreak}
+              <StatHelpText mb={0} fontSize="xs" color="gray.500">
+                MAKS SERİ: <Text as="span" color="trade.profit">{stats.maxWinStreak}K</Text> / <Text as="span" color="trade.loss">{stats.maxLossStreak}Z</Text>
               </StatHelpText>
             </Stat>
           </CardBody>
         </Card>
       </SimpleGrid>
 
-      {/* Grafikler */}
+      {/* Charts Grid */}
       <Grid
         templateColumns={{ base: '1fr', lg: '1fr 1fr' }}
         gap={6}
       >
         <GridItem>
-          <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <Card h="full">
             <CardBody>
-              <Heading size="md" mb={4}>
-                Hafta Performansı
+              <Heading size="sm" mb={6} color={headingColor} textTransform="uppercase" letterSpacing="wide">
+                Performans Eğrisi
               </Heading>
-              <PerformanceChart trades={trades} period={period} />
+              <Box h="300px">
+                <PerformanceChart trades={trades} period={period} />
+              </Box>
             </CardBody>
           </Card>
         </GridItem>
 
         <GridItem>
-          <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <Card h="full">
             <CardBody>
-              <Heading size="md" mb={4}>
-                Haftanın Günleri
+              <Heading size="sm" mb={6} color={headingColor} textTransform="uppercase" letterSpacing="wide">
+                Günlük Dağılım
               </Heading>
-              <WeekDayStatsChart stats={weekDayStats} />
+              <Box h="300px">
+                <WeekDayStatsChart stats={weekDayStats} />
+              </Box>
             </CardBody>
           </Card>
         </GridItem>
 
         <GridItem colSpan={{ base: 1, lg: 2 }}>
-          <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <Card>
             <CardBody>
-              <Heading size="md" mb={4}>
-                En İyi / En Kötü İşlemler
+              <Heading size="sm" mb={6} color={headingColor} textTransform="uppercase" letterSpacing="wide">
+                En İyi Performanslar
               </Heading>
               <TopTradesChart trades={trades} />
             </CardBody>
@@ -161,10 +199,10 @@ export default function Dashboard() {
         </GridItem>
 
         <GridItem colSpan={{ base: 1, lg: 2 }}>
-          <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
+          <Card>
             <CardBody>
-              <Heading size="md" mb={4}>
-                Saatlik Performans
+              <Heading size="sm" mb={6} color={headingColor} textTransform="uppercase" letterSpacing="wide">
+                Saatlik Analiz
               </Heading>
               <HourlyPerformanceChart hourlyData={hourlyPerf} />
             </CardBody>

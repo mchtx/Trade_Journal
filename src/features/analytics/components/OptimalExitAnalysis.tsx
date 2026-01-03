@@ -24,16 +24,17 @@ interface Props {
 export default function OptimalExitAnalysis({ analysis }: Props) {
   const textColor = useColorModeValue('black', 'white')
   const gridColor = useColorModeValue('#e2e8f0', '#4a5568')
+  const cardBg = useColorModeValue('blue.50', 'blue.900')
 
   return (
     <VStack spacing={6} align="stretch">
-      <VStack align="stretch" p={4} bg={useColorModeValue('blue.50', 'blue.900')} borderRadius="md">
-        <Heading size="md">Optimum Çıkış Tavsiyesi</Heading>
+      <VStack align="stretch" p={4} bg={cardBg} borderRadius="md">
+        <Heading size="md">OPTIMAL EXIT STRATEGY</Heading>
         <Text fontSize="3xl" fontWeight="bold" color="brand.500">
           {analysis.optimalExitPercent.toFixed(2)}%
         </Text>
         <Text fontSize="sm" color={textColor}>
-          Aralık: {analysis.exitRangeMin.toFixed(2)}% - {analysis.exitRangeMax.toFixed(2)}%
+          Range: {analysis.exitRangeMin.toFixed(2)}% - {analysis.exitRangeMax.toFixed(2)}%
         </Text>
       </VStack>
 
@@ -42,7 +43,7 @@ export default function OptimalExitAnalysis({ analysis }: Props) {
       </Text>
 
       <VStack align="stretch">
-        <Heading size="sm">Kar Alma Dağılımı</Heading>
+        <Heading size="sm">PROFIT DISTRIBUTION</Heading>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={analysis.histogram}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -55,7 +56,7 @@ export default function OptimalExitAnalysis({ analysis }: Props) {
                 color: textColor,
               }}
             />
-            <Bar dataKey="count" fill="#48bb78" name="Trade Sayısı" />
+            <Bar dataKey="count" fill="#48bb78" name="Trade Count" />
           </BarChart>
         </ResponsiveContainer>
       </VStack>

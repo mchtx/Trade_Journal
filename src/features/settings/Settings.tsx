@@ -38,8 +38,8 @@ export default function Settings() {
     a.click()
 
     toast({
-      title: 'Başarılı',
-      description: 'İşlemler dışa aktarıldı',
+      title: 'SUCCESS',
+      description: 'Trades exported successfully',
       status: 'success',
     })
   }
@@ -61,17 +61,17 @@ export default function Settings() {
         if (success) {
           loadTrades()
           toast({
-            title: 'Başarılı',
-            description: 'İşlemler içe aktarıldı',
+            title: 'SUCCESS',
+            description: 'Trades imported successfully',
             status: 'success',
           })
         } else {
-          throw new Error('Geçersiz dosya formatı')
+          throw new Error('Invalid file format')
         }
       } catch (error) {
         toast({
-          title: 'Hata',
-          description: 'Dosya içe aktarılamadı',
+          title: 'ERROR',
+          description: 'Failed to import file',
           status: 'error',
         })
       }
@@ -96,8 +96,8 @@ export default function Settings() {
     a.click()
 
     toast({
-      title: 'Başarılı',
-      description: 'Yedek alındı',
+      title: 'SUCCESS',
+      description: 'Backup created successfully',
       status: 'success',
     })
   }

@@ -22,9 +22,9 @@ export default function HourlyPerformanceChart({ hourlyData }: Props) {
     .map(([hour, stats]) => ({
       hour: `${hour}:00`,
       'Toplam Getiri %': Number(stats.totalReturnPercent.toFixed(2)),
-      'Trade Sayısı': stats.tradeCount,
+      'İşlem Sayısı': stats.tradeCount,
     }))
-    .filter(d => d['Trade Sayısı'] > 0)
+    .filter(d => d['İşlem Sayısı'] > 0)
 
   return (
     <ResponsiveContainer width="100%" height={300}>

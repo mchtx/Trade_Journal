@@ -13,7 +13,6 @@ import { Trade } from '../../../types'
 import { getTopAndBottomTrades } from './chartUtils'
 import { useColorModeValue } from '@chakra-ui/react'
 import { format } from 'date-fns'
-import { tr } from 'date-fns/locale'
 
 interface Props {
   trades: Trade[]
@@ -27,12 +26,12 @@ export default function TopTradesChart({ trades }: Props) {
 
   const data = [
     ...best.map(t => ({
-      label: `${t.symbol} Long (${format(new Date(t.entryTime), 'dd MMM', { locale: tr })})`,
+      label: `${t.symbol} Long (${format(new Date(t.entryTime), 'dd MMM')})`,
       value: t.metrics.tradeReturnPercent,
       type: 'best',
     })),
     ...worst.map(t => ({
-      label: `${t.symbol} ${t.direction === 'long' ? 'Long' : 'Short'} (${format(new Date(t.entryTime), 'dd MMM', { locale: tr })})`,
+      label: `${t.symbol} ${t.direction === 'long' ? 'Long' : 'Short'} (${format(new Date(t.entryTime), 'dd MMM')})`,
       value: t.metrics.tradeReturnPercent,
       type: 'worst',
     })),

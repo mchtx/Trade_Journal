@@ -51,9 +51,11 @@ export default function Layout() {
     navigate('/login')
   }
 
-  const bgColor = useColorModeValue('white', 'gray.900')
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
-  const navBgColor = useColorModeValue('gray.50', 'gray.800')
+  const bgColor = useColorModeValue('rgba(255, 255, 255, 0.9)', 'rgba(22, 27, 34, 0.6)')
+  const borderColor = useColorModeValue('gray.200', 'rgba(255, 255, 255, 0.08)')
+  const navBgColor = useColorModeValue('gray.50', 'rgba(22, 27, 34, 0.4)')
+  const textColor = useColorModeValue('#1A1A1A', '#E0E0E0')
+  const mutedColor = useColorModeValue('gray.600', 'gray.400')
 
   if (isLoading) {
     return (
@@ -73,18 +75,25 @@ export default function Layout() {
             colorScheme="brand"
             onClick={onClose}
             justifyContent="flex-start"
+            _hover={{
+              bg: useColorModeValue('gray.200', 'whiteAlpha.100'),
+              transform: 'translateX(4px)',
+            }}
+            transition="all 0.2s"
+            color={location.pathname === item.path ? 'white' : textColor}
           >
             {item.label}
           </Button>
         </Link>
       ))}
-      <Divider my={2} />
+      <Divider my={2} borderColor={borderColor} />
       <Button
         w="full"
         variant="ghost"
         colorScheme="red"
         onClick={handleLogout}
         justifyContent="flex-start"
+        _hover={{ bg: useColorModeValue('red.50', 'whiteAlpha.100') }}
       >
         Çıkış Yap
       </Button>
@@ -96,33 +105,54 @@ export default function Layout() {
       {/* Header */}
       <Box
         bg={bgColor}
-        borderBottomWidth="1px"
+        backdropFilter="blur(12px)"
+        borderBottom="1px solid"
         borderColor={borderColor}
-        px={4}
+        px={6}
         py={4}
+        position="sticky"
+        top={0}
+        zIndex={100}
       >
         <HStack justify="space-between">
-          <HStack>
+          <HStack spacing={4}>
             <IconButton
               aria-label="Menu"
               icon={<HamburgerIcon />}
               display={{ base: 'flex', md: 'none' }}
               onClick={onOpen}
+              variant="ghost"
             />
-            <Text fontSize="2xl" fontWeight="bold" color="brand.500">
-              📊 Trading Journal
+            <Text 
+              fontSize="2xl" 
+              fontWeight="700" 
+              letterSpacing="tight"
+              bgGradient="linear(to-r, brand.400, brand.200)"
+              bgClip="text"
+            >
+              TRADING TERMINAL
             </Text>
           </HStack>
 
-          <HStack spacing={2}>
-            <Text fontSize="sm" color="gray.500">
-              {trades.length} işlem
-            </Text>
+          <HStack spacing={4}>
+            <Box 
+              px={3} 
+              py={1} 
+              bg={useColorModeValue('gray.100', 'whiteAlpha.100')}
+              borderRadius="full" 
+              border="1px solid" 
+              borderColor={borderColor}
+            >
+              <Text fontSize="xs" fontFamily="mono" color={useColorModeValue('brand.600', 'brand.300')}>
+                {trades.length} TRADES
+              </Text>
+            </Box>
             <IconButton
               aria-label="Toggle color mode"
               icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
               onClick={toggleColorMode}
               variant="ghost"
+              size="sm"
             />
           </HStack>
         </HStack>
@@ -133,11 +163,12 @@ export default function Layout() {
         {/* Desktop Sidebar */}
         <Box
           display={{ base: 'none', md: 'block' }}
-          w="250px"
+          w="260px"
           bg={navBgColor}
-          borderRightWidth="1px"
+          backdropFilter="blur(12px)"
+          borderRight="1px solid"
           borderColor={borderColor}
-          p={4}
+          p={6}
           overflowY="auto"
         >
           <NavContent />
@@ -145,8 +176,8 @@ export default function Layout() {
 
         {/* Mobile Drawer */}
         <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-          <DrawerOverlay />
-          <DrawerContent>
+          <DrawerOverlay backdropFilter="blur(4px)" />
+          <DrawerContent bg={useColorModeValue('white', '#161b22')}>
             <DrawerCloseButton />
             <DrawerBody pt={8}>
               <NavContent />
@@ -155,8 +186,8 @@ export default function Layout() {
         </Drawer>
 
         {/* Page Content */}
-        <Box flex={1} overflow="auto" w="full">
-          <Box p={{ base: 4, md: 6 }} maxW="2000px">
+        <Box flex={1} overflow="auto" w="full" position="relative">
+          <Box p={{ base: 4, md: 8 }} maxW="1800px" mx="auto">
             <Outlet />
           </Box>
         </Box>

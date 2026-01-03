@@ -35,7 +35,7 @@ export default function RiskRewardDistribution({ trades }: Props) {
 
   return (
     <VStack spacing={6} align="stretch">
-      <Heading size="md">Risk/Ödül vs Getiri % Dağılımı</Heading>
+      <Heading size="md">RISK/REWARD VS RETURN % DISTRIBUTION</Heading>
       
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -45,12 +45,14 @@ export default function RiskRewardDistribution({ trades }: Props) {
             dataKey="riskReward"
             name="R:R"
             tick={{ fill: textColor, fontSize: 12 }}
+            label={{ value: 'Risk/Reward Ratio', position: 'bottom', fill: textColor, offset: 0 }}
           />
           <YAxis
             type="number"
             dataKey="returnPercent"
-            name="Getiri %"
+            name="Return %"
             tick={{ fill: textColor, fontSize: 12 }}
+            label={{ value: 'Return %', angle: -90, position: 'left', fill: textColor }}
           />
           <Tooltip
             contentStyle={{

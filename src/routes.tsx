@@ -36,7 +36,7 @@ export default function Routes() {
 
       <Route element={<PrivateRoute />}>
         <Route element={<Layout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/login" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/trades" element={<TradesList />} />
           <Route path="/trades/new" element={<AddTrade />} />

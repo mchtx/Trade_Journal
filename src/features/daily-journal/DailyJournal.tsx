@@ -23,7 +23,6 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { format, parseISO, addDays, subDays } from 'date-fns'
-import { tr } from 'date-fns/locale'
 import { useTradeStore } from '@context/store'
 import { useDailySummary, useTradeMetrics } from '@hooks/useAnalytics'
 import { getTradesByDate, calculateTradeMetrics } from '@utils/calculations'
@@ -61,12 +60,12 @@ export default function DailyJournal() {
 
   return (
     <VStack spacing={6} align="stretch">
-      <Heading>Günlük Günlük</Heading>
+      <Heading>DAILY JOURNAL</Heading>
 
       {/* Tarih Seçimi */}
       <HStack spacing={4}>
         <Button onClick={handlePrevDay} variant="outline">
-          ← Önceki Gün
+          ← PREVIOUS DAY
         </Button>
 
         <Input
@@ -77,12 +76,12 @@ export default function DailyJournal() {
         />
 
         <Button onClick={handleNextDay} variant="outline">
-          Sonraki Gün →
+          NEXT DAY →
         </Button>
 
         <Box flex={1}>
           <Heading size="md">
-            {format(parseISO(selectedDate), 'EEEE, dd MMMM yyyy', { locale: tr })}
+            {format(parseISO(selectedDate), 'EEEE, dd MMMM yyyy')}
           </Heading>
         </Box>
       </HStack>
@@ -92,11 +91,11 @@ export default function DailyJournal() {
         <Card bg={bgColor} borderColor={borderColor} borderWidth="1px">
           <CardBody>
             <Stat>
-              <StatLabel>Toplam Getiri %</StatLabel>
+              <StatLabel>TOTAL RETURN %</StatLabel>
               <StatNumber color={getStatColor(dailySummary.totalReturnPercent)}>
                 {dailySummary.totalReturnPercent.toFixed(2)}%
               </StatNumber>
-              <StatHelpText>{dailySummary.tradeCount} işlem</StatHelpText>
+              <StatHelpText>{dailySummary.tradeCount} trades</StatHelpText>
             </Stat>
           </CardBody>
         </Card>

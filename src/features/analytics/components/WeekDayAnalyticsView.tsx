@@ -20,6 +20,16 @@ interface Props {
 
 export default function WeekDayAnalyticsView({ stats }: Props) {
   const textColor = useColorModeValue('black', 'white')
+  
+  const bestBg = useColorModeValue('green.100', 'green.900')
+  const bestText = useColorModeValue('green.800', 'green.100')
+  const bestSubText = useColorModeValue('green.700', 'green.200')
+
+  const worstBg = useColorModeValue('red.100', 'red.900')
+  const worstText = useColorModeValue('red.800', 'red.100')
+  const worstSubText = useColorModeValue('red.700', 'red.200')
+
+  const headerBg = useColorModeValue('gray.50', 'whiteAlpha.50')
 
   const best = stats.reduce((max, curr) =>
     curr.averageReturnPercent > max.averageReturnPercent ? curr : max
@@ -32,42 +42,42 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
     <VStack spacing={6} align="stretch">
       {/* Best/Worst Summary */}
       <HStack spacing={4}>
-        <VStack flex={1} p={4} bg="green.900" borderRadius="md" align="stretch">
-          <Heading size="sm" color="green.100">
-            En İyi Gün
+        <VStack flex={1} p={4} bg={bestBg} borderRadius="md" align="stretch">
+          <Heading size="sm" color={bestText}>
+            BEST DAY
           </Heading>
-          <Text fontSize="2xl" fontWeight="bold" color="green.100">
+          <Text fontSize="2xl" fontWeight="bold" color={bestText}>
             {best.dayOfWeek}
           </Text>
-          <Text color="green.200">{best.averageReturnPercent.toFixed(2)}% Ort.</Text>
-          <Text color="green.200">{best.winRate.toFixed(1)}% Win Rate</Text>
+          <Text color={bestSubText}>{best.averageReturnPercent.toFixed(2)}% Avg.</Text>
+          <Text color={bestSubText}>{best.winRate.toFixed(1)}% Win Rate</Text>
         </VStack>
 
-        <VStack flex={1} p={4} bg="red.900" borderRadius="md" align="stretch">
-          <Heading size="sm" color="red.100">
-            En Kötü Gün
+        <VStack flex={1} p={4} bg={worstBg} borderRadius="md" align="stretch">
+          <Heading size="sm" color={worstText}>
+            WORST DAY
           </Heading>
-          <Text fontSize="2xl" fontWeight="bold" color="red.100">
+          <Text fontSize="2xl" fontWeight="bold" color={worstText}>
             {worst.dayOfWeek}
           </Text>
-          <Text color="red.200">{worst.averageReturnPercent.toFixed(2)}% Ort.</Text>
-          <Text color="red.200">{worst.winRate.toFixed(1)}% Win Rate</Text>
+          <Text color={worstSubText}>{worst.averageReturnPercent.toFixed(2)}% Avg.</Text>
+          <Text color={worstSubText}>{worst.winRate.toFixed(1)}% Win Rate</Text>
         </VStack>
       </HStack>
 
       {/* Detailed Table */}
       <VStack align="stretch">
-        <Heading size="md">Haftanın Tüm Günleri</Heading>
+        <Heading size="md">WEEKLY BREAKDOWN</Heading>
         <Table size="sm">
           <Thead>
-            <Tr bg={useColorModeValue('gray.100', 'gray.700')}>
-              <Th>Gün</Th>
-              <Th>Trade Sayısı</Th>
-              <Th>Ort. Getiri %</Th>
-              <Th>Toplam Getiri %</Th>
+            <Tr bg={headerBg}>
+              <Th>Day</Th>
+              <Th>Trades</Th>
+              <Th>Avg Return %</Th>
+              <Th>Total Return %</Th>
               <Th>Win Rate %</Th>
-              <Th>En Büyük Kazanç</Th>
-              <Th>En Büyük Kayıp</Th>
+              <Th>Max Win</Th>
+              <Th>Max Loss</Th>
             </Tr>
           </Thead>
           <Tbody>

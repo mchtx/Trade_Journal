@@ -22,7 +22,7 @@ export default function WeekDayStatsChart({ stats }: Props) {
   const data = stats.map(stat => ({
     day: stat.dayOfWeek,
     'Ort. Getiri %': Number(stat.averageReturnPercent.toFixed(2)),
-    'Win Rate %': Number(stat.winRate.toFixed(2)),
+    'Kazanma Oranı %': Number(stat.winRate.toFixed(2)),
   }))
 
   return (
@@ -40,7 +40,7 @@ export default function WeekDayStatsChart({ stats }: Props) {
         />
         <Legend wrapperStyle={{ color: textColor }} />
         <Bar dataKey="Ort. Getiri %" fill="#48bb78" />
-        <Bar dataKey="Win Rate %" fill="#3182ce" />
+        <Bar dataKey="Kazanma Oranı %" fill="#3182ce" />
       </BarChart>
     </ResponsiveContainer>
   )
