@@ -5,6 +5,41 @@ import { tr } from 'date-fns/locale';
 // ==================== TEMELLİ HESAPLAMALAR ====================
 
 /**
+ * Net PnL hesapla (Miktar bazlı)
+ */
+export const calculateNetPnL = (
+  direction: 'long' | 'short',
+  entryPrice: number,
+  exitPrice: number,
+  quantity: number
+): number => {
+  if (direction === 'long') {
+    return (exitPrice - entryPrice) * quantity;
+  } else {
+    return (entryPrice - exitPrice) * quantity;
+  }
+};
+
+/**
+ * Gerçekleşen R:R oranını hesapla (User defined formula)
+ * Risk = |Entry - SL|
+ * Reward = |Exit - Entry|
+ */
+export const calculateRealizedRR = (
+  entryPrice: number,
+  exitPrice: number,
+  stopLoss?: number
+): number => {
+  if (!stopLoss) return 0;
+  
+  const risk = Math.abs(entryPrice - stopLoss);
+  const reward = Math.abs(exitPrice - entryPrice);
+  
+  if (risk === 0) return 0;
+  return reward / risk;
+};
+
+/**
  * Long/Short işlem için yüzde bazlı getiriyi hesapla
  */
 export const calculateTradeReturnPercent = (

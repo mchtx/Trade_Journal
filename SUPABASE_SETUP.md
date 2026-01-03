@@ -269,6 +269,20 @@ Supabase otomatik daily backup alıyor (Settings → Backups)
 
 ---
 
+## ⚠️ Önemli: Email Onayı (Geliştirme İçin)
+
+Varsayılan olarak Supabase, yeni kayıt olan kullanıcılardan email onayı ister. Geliştirme aşamasında bunu kapatmak işinizi kolaylaştırır:
+
+1. Supabase Dashboard'a git
+2. Sol menüden **Authentication** → **Providers** seç
+3. **Email** sağlayıcısını aç
+4. **Confirm email** seçeneğini **KAPAT** (Disable)
+5. **Save** butonuna tıkla
+
+Bunu yapmazsanız, kayıt olduktan sonra "Email not confirmed" hatası alırsınız ve giriş yapamazsınız.
+
+---
+
 ## ✅ Başarı Kriteresi
 
 ✅ `npm run dev` komutuyla uygulama çalışıyor

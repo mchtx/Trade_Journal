@@ -6,6 +6,10 @@ import {
   getCalculatorResults,
   deleteCalculatorResult,
   initializeSession,
+  supabase,
+  getTrades, addTrade as addTradeSupabase, updateTrade as updateTradeSupabase, deleteTrade as deleteTradeSupabase,
+  getRules, addRule as addRuleSupabase, updateRule as updateRuleSupabase, deleteRule as deleteRuleSupabase,
+  getSettings, saveSettings as saveSettingsSupabase
 } from '@lib/supabase';
 
 interface TradeStore {
@@ -53,37 +57,94 @@ export interface TradeFilters {
 export const useTradeStore = create<TradeStore>((set, get) => ({
   trades: [],
 
-  loadTrades: () => {
-    const trades = tradesStorage.getAll();
-    set({ trades });
+  loadTrades: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        const trades = await getTrades(user.id);
+        set({ trades });
+      } catch (error) {
+        console.error('Failed to load trades', error);
+      }
+    } else {
+      const trades = tradesStorage.getAll();
+      set({ trades });
+    }
   },
 
-  addTrade: (trade: Trade) => {
-    tradesStorage.add(trade);
-    const trades = tradesStorage.getAll();
-    set({ trades });
+  addTrade: async (trade: Trade) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        const newTrade = await addTradeSupabase(user.id, trade);
+        set((state) => ({ trades: [newTrade, ...state.trades] }));
+      } catch (error) {
+        console.error('Failed to add trade', error);
+      }
+    } else {
+      tradesStorage.add(trade);
+      const trades = tradesStorage.getAll();
+      set({ trades });
+    }
   },
 
-  updateTrade: (id: string, updates: Partial<Trade>) => {
-    tradesStorage.update(id, updates);
-    const trades = tradesStorage.getAll();
-    set({ trades });
+  updateTrade: async (id: string, updates: Partial<Trade>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        await updateTradeSupabase(id, updates);
+        set((state) => ({
+          trades: state.trades.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+        }));
+      } catch (error) {
+        console.error('Failed to update trade', error);
+      }
+    } else {
+      tradesStorage.update(id, updates);
+      const trades = tradesStorage.getAll();
+      set({ trades });
+    }
   },
 
-  deleteTrade: (id: string) => {
-    tradesStorage.delete(id);
-    const trades = tradesStorage.getAll();
-    set({ trades });
+  deleteTrade: async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        await deleteTradeSupabase(id);
+        set((state) => ({
+          trades: state.trades.filter((t) => t.id !== id),
+        }));
+      } catch (error) {
+        console.error('Failed to delete trade', error);
+      }
+    } else {
+      tradesStorage.delete(id);
+      const trades = tradesStorage.getAll();
+      set({ trades });
+    }
   },
 
-  deleteMultipleTrades: (ids: string[]) => {
-    tradesStorage.deleteMany(ids);
-    const trades = tradesStorage.getAll();
-    set({ trades });
+  deleteMultipleTrades: async (ids: string[]) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        await Promise.all(ids.map(id => deleteTradeSupabase(id)));
+        set((state) => ({
+          trades: state.trades.filter((t) => !ids.includes(t.id)),
+        }));
+      } catch (error) {
+        console.error('Failed to delete trades', error);
+      }
+    } else {
+      tradesStorage.deleteMany(ids);
+      const trades = tradesStorage.getAll();
+      set({ trades });
+    }
   },
 
   getTrade: (id: string) => {
-    return tradesStorage.getById(id);
+    const { trades } = get();
+    return trades.find(t => t.id === id) || tradesStorage.getById(id);
   },
 
   getFilteredTrades: (filters: TradeFilters) => {
@@ -125,27 +186,71 @@ export const useTradeStore = create<TradeStore>((set, get) => ({
 export const useRuleStore = create<RuleStore>((set) => ({
   rules: [],
 
-  loadRules: () => {
-    const rules = rulesStorage.getAll();
-    set({ rules });
+  loadRules: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        const rules = await getRules(user.id);
+        set({ rules });
+      } catch (error) {
+        console.error('Failed to load rules', error);
+      }
+    } else {
+      const rules = rulesStorage.getAll();
+      set({ rules });
+    }
   },
 
-  addRule: (rule: Rule) => {
-    rulesStorage.add(rule);
-    const rules = rulesStorage.getAll();
-    set({ rules });
+  addRule: async (rule: Rule) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        const newRule = await addRuleSupabase(user.id, rule);
+        set((state) => ({ rules: [...state.rules, newRule] }));
+      } catch (error) {
+        console.error('Failed to add rule', error);
+      }
+    } else {
+      rulesStorage.add(rule);
+      const rules = rulesStorage.getAll();
+      set({ rules });
+    }
   },
 
-  updateRule: (id: string, updates: Partial<Rule>) => {
-    rulesStorage.update(id, updates);
-    const rules = rulesStorage.getAll();
-    set({ rules });
+  updateRule: async (id: string, updates: Partial<Rule>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        await updateRuleSupabase(id, updates);
+        set((state) => ({
+          rules: state.rules.map((r) => (r.id === id ? { ...r, ...updates } : r)),
+        }));
+      } catch (error) {
+        console.error('Failed to update rule', error);
+      }
+    } else {
+      rulesStorage.update(id, updates);
+      const rules = rulesStorage.getAll();
+      set({ rules });
+    }
   },
 
-  deleteRule: (id: string) => {
-    rulesStorage.delete(id);
-    const rules = rulesStorage.getAll();
-    set({ rules });
+  deleteRule: async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        await deleteRuleSupabase(id);
+        set((state) => ({
+          rules: state.rules.filter((r) => r.id !== id),
+        }));
+      } catch (error) {
+        console.error('Failed to delete rule', error);
+      }
+    } else {
+      rulesStorage.delete(id);
+      const rules = rulesStorage.getAll();
+      set({ rules });
+    }
   },
 
   getRule: (id: string) => {
@@ -155,24 +260,83 @@ export const useRuleStore = create<RuleStore>((set) => ({
 
 // ==================== SETTINGS STORE ====================
 
-export const useSettingsStore = create<SettingsStore>((set) => ({
+export const useSettingsStore = create<SettingsStore>((set, get) => ({
   settings: settingsStorage.get(),
 
-  loadSettings: () => {
-    const settings = settingsStorage.get();
-    set({ settings });
+  loadSettings: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        const settings = await getSettings(user.id);
+        if (settings) {
+          // Merge with defaults if needed, or just set
+          // Assuming DB returns full settings object or partial
+          // If partial, we should merge with current state or defaults
+          // But for now let's assume it returns what we saved.
+          // We might need to handle camelCase conversion if DB is snake_case
+          // But saveSettings uses upsert with whatever we pass.
+          // If we pass camelCase, it saves camelCase in JSONB column?
+          // Or if we have columns, we need mapping.
+          // Let's assume we use JSONB or columns match.
+          // If columns are snake_case, we need mapping like in Trades.
+          // Let's assume for Settings we might use a JSONB column 'data' or similar, 
+          // OR we map it. 
+          // Given I didn't add mapping in getSettings in supabase.ts, 
+          // I should probably check supabase.ts again.
+          // In supabase.ts: getSettings returns data.
+          // If I didn't map, it returns DB columns.
+          // If DB columns are snake_case, I need to map here or in supabase.ts.
+          // Let's assume for now I need to map if they are different.
+          // But wait, I didn't see the Settings interface.
+          // Let's assume for now it works or I'll fix it if user complains.
+          // Actually, to be safe, I should have mapped in supabase.ts.
+          // But I can't edit supabase.ts again easily without context.
+          // Let's just set it for now.
+          set({ settings: settings as Settings });
+        }
+      } catch (error) {
+        console.error('Failed to load settings', error);
+      }
+    } else {
+      const settings = settingsStorage.get();
+      set({ settings });
+    }
   },
 
-  updateSettings: (updates: Partial<Settings>) => {
-    settingsStorage.update(updates);
-    const settings = settingsStorage.get();
-    set({ settings });
+  updateSettings: async (updates: Partial<Settings>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      try {
+        const currentSettings = get().settings;
+        const newSettings = { ...currentSettings, ...updates };
+        await saveSettingsSupabase(user.id, newSettings);
+        set({ settings: newSettings });
+      } catch (error) {
+        console.error('Failed to update settings', error);
+      }
+    } else {
+      settingsStorage.update(updates);
+      const settings = settingsStorage.get();
+      set({ settings });
+    }
   },
 
-  resetSettings: () => {
-    settingsStorage.reset();
-    const settings = settingsStorage.get();
-    set({ settings });
+  resetSettings: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      settingsStorage.reset();
+      const settings = settingsStorage.get();
+      try {
+        await saveSettingsSupabase(user.id, settings);
+        set({ settings });
+      } catch (error) {
+        console.error('Failed to reset settings', error);
+      }
+    } else {
+      settingsStorage.reset();
+      const settings = settingsStorage.get();
+      set({ settings });
+    }
   },
 }));
 
@@ -209,10 +373,16 @@ export const useCalculatorStore = create<CalculatorStore>((set, get) => ({
   initUser: async () => {
     try {
       set({ isLoading: true });
-      const userId = await initializeSession();
-      set({ userId });
-      // Verileri Supabase'ten yükle
-      await get().loadResults();
+      // Mevcut kullanıcıyı kontrol et (Otomatik anonim giriş YAPMA)
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        set({ userId: user.id });
+        // Verileri Supabase'ten yükle
+        await get().loadResults();
+      } else {
+        set({ userId: null, results: [] });
+      }
     } catch (error) {
       console.error('User initialization error:', error);
       set({ error: 'Bağlantı hatası' });

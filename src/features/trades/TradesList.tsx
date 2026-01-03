@@ -30,8 +30,8 @@ import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom'
 import { useTradeStore, TradeFilters } from '@context/store'
 import { useState } from 'react'
-import { calculateTradeMetrics } from '@utils/calculations'
-import { format } from 'date-fns'
+import { calculateNetPnL, calculateRealizedRR } from '@utils/calculations'
+import { format, parseISO } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
 export default function TradesList() {
@@ -69,7 +69,6 @@ export default function TradesList() {
   const uniqueStrategies = [...new Set(trades.map(t => t.strategyTag))]
 
   const selectedTrade = selectedTradeId ? trades.find(t => t.id === selectedTradeId) : null
-  const selectedMetrics = selectedTrade ? calculateTradeMetrics(selectedTrade) : null
 
   return (
     <VStack spacing={6} align="stretch">
@@ -145,57 +144,67 @@ export default function TradesList() {
         <Table size="sm">
           <Thead>
             <Tr bg={useColorModeValue('gray.100', 'gray.700')}>
-              <Th>Sembol</Th>
-              <Th>Yön</Th>
-              <Th>Giriş</Th>
-              <Th>Çıkış</Th>
-              <Th>Getiri %</Th>
-              <Th>R:R</Th>
-              <Th>Süre</Th>
-              <Th>Tarih</Th>
+              <Th>İŞLEM NO</Th>
+              <Th>TARİH</Th>
+              <Th>PARİTE</Th>
+              <Th>YÖN</Th>
+              <Th>SETUP</Th>
+              <Th isNumeric>GİRİŞ FİYATI</Th>
+              <Th isNumeric>STOP LOSS</Th>
+              <Th isNumeric>ÇIKIŞ FİYATI</Th>
+              <Th isNumeric>MİKTAR</Th>
+              <Th isNumeric>NET KÂR/ZARAR</Th>
+              <Th>DURUM</Th>
+              <Th>RİSK/ÖDÜL</Th>
               <Th>İşlemler</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {filteredTrades.map(trade => {
-              const metrics = calculateTradeMetrics(trade)
-              const duration = Math.round((new Date(trade.exitTime).getTime() - new Date(trade.entryTime).getTime()) / (1000 * 60))
-              const durationStr = duration < 60 ? `${duration}m` : `${Math.round(duration / 60)}h`
+            {filteredTrades.map((trade, index) => {
+              const netPnL = calculateNetPnL(
+                trade.direction,
+                trade.entryPrice,
+                trade.exitPrice,
+                trade.positionSize || 0
+              )
+              const rrRatio = calculateRealizedRR(
+                trade.entryPrice,
+                trade.exitPrice,
+                trade.stopLoss
+              )
+              const isWin = netPnL > 0
+              const isLoss = netPnL < 0
+              
+              const rowBg = isLoss ? 'red.50' : isWin ? 'green.50' : undefined
+              const darkRowBg = isLoss ? 'red.900' : isWin ? 'green.900' : undefined
+              const finalRowBg = useColorModeValue(rowBg, darkRowBg)
 
               return (
-                <Tr key={trade.id} _hover={{ bg: hoverBg }}>
+                <Tr key={trade.id} _hover={{ bg: hoverBg }} bg={finalRowBg}>
+                  <Td>{filteredTrades.length - index}</Td>
+                  <Td>{format(parseISO(trade.entryTime), 'dd.MM.yyyy (EEEE)', { locale: tr })}</Td>
                   <Td fontWeight="bold">{trade.symbol}</Td>
                   <Td>
                     <Badge colorScheme={trade.direction === 'long' ? 'green' : 'red'}>
-                      {trade.direction === 'long' ? 'L' : 'S'}
+                      {trade.direction === 'long' ? 'Long' : 'Short'}
                     </Badge>
                   </Td>
-                  <Td>{trade.entryPrice.toFixed(4)}</Td>
-                  <Td>{trade.exitPrice.toFixed(4)}</Td>
+                  <Td>{trade.strategyTag}</Td>
+                  <Td isNumeric>{trade.entryPrice}</Td>
+                  <Td isNumeric>{trade.stopLoss || '-'}</Td>
+                  <Td isNumeric>{trade.exitPrice}</Td>
+                  <Td isNumeric>{trade.positionSize || '-'}</Td>
+                  <Td isNumeric fontWeight="bold" color={netPnL > 0 ? 'green.500' : netPnL < 0 ? 'red.500' : undefined}>
+                    {netPnL.toFixed(2)}
+                  </Td>
                   <Td>
-                    <Badge
-                      colorScheme={
-                        metrics.result === 'win' ? 'green' : metrics.result === 'loss' ? 'red' : 'gray'
-                      }
-                    >
-                      {metrics.tradeReturnPercent.toFixed(2)}%
+                    <Badge colorScheme={isWin ? 'green' : isLoss ? 'red' : 'gray'}>
+                      {isWin ? 'Win' : isLoss ? 'Loss' : 'BE'}
                     </Badge>
                   </Td>
-                  <Td>1:{metrics.riskRewardRatio.toFixed(2)}</Td>
-                  <Td>{durationStr}</Td>
-                  <Td>{format(new Date(trade.entryTime), 'dd MMM HH:mm', { locale: tr })}</Td>
+                  <Td>1:{rrRatio.toFixed(2)}</Td>
                   <Td>
                     <HStack spacing={1}>
-                      <IconButton
-                        aria-label="Detay"
-                        icon={<EditIcon />}
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedTradeId(trade.id)
-                          onOpen()
-                        }}
-                      />
                       <IconButton
                         aria-label="Düzenle"
                         icon={<EditIcon />}
@@ -227,48 +236,21 @@ export default function TradesList() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>İşlem Detayı</ModalHeader>
+          <ModalHeader>İşlem Sil</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            {selectedTrade && selectedMetrics && (
-              <VStack spacing={4} align="stretch">
-                <HStack justify="space-between">
-                  <Text fontWeight="bold">Sembol:</Text>
-                  <Text>{selectedTrade.symbol}</Text>
-                </HStack>
-                <HStack justify="space-between">
-                  <Text fontWeight="bold">Not:</Text>
-                  <Text>{selectedTrade.notes}</Text>
-                </HStack>
-                <HStack justify="space-between">
-                  <Text fontWeight="bold">Getiri %:</Text>
-                  <Badge colorScheme={selectedMetrics.result === 'win' ? 'green' : selectedMetrics.result === 'loss' ? 'red' : 'gray'}>
-                    {selectedMetrics.tradeReturnPercent.toFixed(2)}%
-                  </Badge>
-                </HStack>
-                <HStack spacing={2} pt={4}>
-                  <Button
-                    flex={1}
-                    colorScheme="blue"
-                    onClick={() => {
-                      navigate(`/trades/${selectedTrade.id}/edit`)
-                      onClose()
-                    }}
-                  >
-                    Düzenle
-                  </Button>
-                  <Button
-                    flex={1}
-                    colorScheme="red"
-                    onClick={() => {
-                      handleDelete(selectedTrade.id)
-                    }}
-                  >
-                    Sil
-                  </Button>
-                </HStack>
-              </VStack>
-            )}
+            <Text>Bu işlemi silmek istediğinize emin misiniz?</Text>
+            <HStack spacing={4} pt={4} justify="flex-end">
+              <Button onClick={onClose}>İptal</Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  if (selectedTradeId) handleDelete(selectedTradeId)
+                }}
+              >
+                Sil
+              </Button>
+            </HStack>
           </ModalBody>
         </ModalContent>
       </Modal>

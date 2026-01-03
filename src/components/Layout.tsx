@@ -14,11 +14,13 @@ import {
   DrawerCloseButton,
   useDisclosure,
   Text,
+  Divider,
 } from '@chakra-ui/react'
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons'
 import { useState, useEffect } from 'react'
 import { useTradeStore } from '@context/store'
+import { useAuth } from '../context/AuthContext'
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard' },
@@ -34,13 +36,20 @@ export default function Layout() {
   const { colorMode, toggleColorMode } = useColorMode()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const location = useLocation()
+  const navigate = useNavigate()
   const { loadTrades, trades } = useTradeStore()
+  const { signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     loadTrades()
     setIsLoading(false)
   }, [loadTrades])
+
+  const handleLogout = async () => {
+    await signOut()
+    navigate('/login')
+  }
 
   const bgColor = useColorModeValue('white', 'gray.900')
   const borderColor = useColorModeValue('gray.200', 'gray.700')
@@ -69,6 +78,16 @@ export default function Layout() {
           </Button>
         </Link>
       ))}
+      <Divider my={2} />
+      <Button
+        w="full"
+        variant="ghost"
+        colorScheme="red"
+        onClick={handleLogout}
+        justifyContent="flex-start"
+      >
+        Çıkış Yap
+      </Button>
     </VStack>
   )
 

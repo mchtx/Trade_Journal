@@ -96,6 +96,7 @@ export interface Rule {
   id: string;
   title: string;
   description: string;
+  category?: string; // Strateji adı veya 'General'
   isPinned: boolean;
   createdAt: string;
   updatedAt: string;
