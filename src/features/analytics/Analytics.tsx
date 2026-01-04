@@ -32,7 +32,7 @@ export default function Analytics() {
 
   return (
     <VStack spacing={6} align="stretch">
-      <Heading size="lg" letterSpacing="tight">ADVANCED ANALYTICS</Heading>
+      <Heading size="lg" letterSpacing="tight">GELİŞMİŞ ANALİTİK</Heading>
 
       <Tabs variant="soft-rounded" colorScheme="brand" isLazy>
         <TabList mb={4} overflowX="auto" pb={2} css={{
@@ -54,7 +54,7 @@ export default function Analytics() {
             fontWeight="medium"
             whiteSpace="nowrap"
           >
-            DAILY PERFORMANCE
+            GÜNLÜK PERFORMANS
           </Tab>
           <Tab 
             color={tabColor} 
@@ -63,7 +63,7 @@ export default function Analytics() {
             fontWeight="medium"
             whiteSpace="nowrap"
           >
-            OPTIMAL EXIT
+            OPTIMAL ÇIKIŞ
           </Tab>
           <Tab 
             color={tabColor} 
@@ -71,7 +71,7 @@ export default function Analytics() {
             fontWeight="medium"
             whiteSpace="nowrap"
           >
-            RISK DISTRIBUTION
+            RİSK DAĞILIMI
           </Tab>
         </TabList>
 

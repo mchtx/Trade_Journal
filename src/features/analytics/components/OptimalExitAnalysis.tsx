@@ -29,12 +29,12 @@ export default function OptimalExitAnalysis({ analysis }: Props) {
   return (
     <VStack spacing={6} align="stretch">
       <VStack align="stretch" p={4} bg={cardBg} borderRadius="md">
-        <Heading size="md">OPTIMAL EXIT STRATEGY</Heading>
+        <Heading size="md">OPTIMAL ÇIKIŞ STRATEJİSİ</Heading>
         <Text fontSize="3xl" fontWeight="bold" color="brand.500">
           {analysis.optimalExitPercent.toFixed(2)}%
         </Text>
         <Text fontSize="sm" color={textColor}>
-          Range: {analysis.exitRangeMin.toFixed(2)}% - {analysis.exitRangeMax.toFixed(2)}%
+          Aralık: {analysis.exitRangeMin.toFixed(2)}% - {analysis.exitRangeMax.toFixed(2)}%
         </Text>
       </VStack>
 
@@ -43,22 +43,24 @@ export default function OptimalExitAnalysis({ analysis }: Props) {
       </Text>
 
       <VStack align="stretch">
-        <Heading size="sm">PROFIT DISTRIBUTION</Heading>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={analysis.histogram}>
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="range" tick={{ fill: textColor, fontSize: 11 }} angle={-45} />
-            <YAxis tick={{ fill: textColor, fontSize: 12 }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: useColorModeValue('#fff', '#1a202c'),
-                border: `1px solid ${gridColor}`,
-                color: textColor,
-              }}
-            />
-            <Bar dataKey="count" fill="#48bb78" name="Trade Count" />
-          </BarChart>
-        </ResponsiveContainer>
+        <Heading size="sm">KAR DAĞILIMI</Heading>
+        <Box h="250px" w="full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={analysis.histogram}>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis dataKey="range" tick={{ fill: textColor, fontSize: 11 }} angle={-45} textAnchor="end" height={60} />
+              <YAxis tick={{ fill: textColor, fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: useColorModeValue('#fff', '#1a202c'),
+                  border: `1px solid ${gridColor}`,
+                  color: textColor,
+                }}
+              />
+              <Bar dataKey="count" fill="#48bb78" name="İşlem Sayısı" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Box>
       </VStack>
     </VStack>
   )
