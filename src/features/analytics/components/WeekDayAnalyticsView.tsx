@@ -11,6 +11,11 @@ import {
   Th,
   Td,
   useColorModeValue,
+  Stack,
+  Box,
+  Card,
+  CardBody,
+  SimpleGrid,
 } from '@chakra-ui/react'
 import { WeekDayStats } from '../../../types'
 
@@ -41,7 +46,7 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
   return (
     <VStack spacing={6} align="stretch">
       {/* Best/Worst Summary */}
-      <HStack spacing={4}>
+      <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
         <VStack flex={1} p={4} bg={bestBg} borderRadius="md" align="stretch">
           <Heading size="sm" color={bestText}>
             BEST DAY
@@ -63,41 +68,89 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
           <Text color={worstSubText}>{worst.averageReturnPercent.toFixed(2)}% Avg.</Text>
           <Text color={worstSubText}>{worst.winRate.toFixed(1)}% Win Rate</Text>
         </VStack>
-      </HStack>
+      </Stack>
 
       {/* Detailed Table */}
       <VStack align="stretch">
         <Heading size="md">WEEKLY BREAKDOWN</Heading>
-        <Table size="sm">
-          <Thead>
-            <Tr bg={headerBg}>
-              <Th>Day</Th>
-              <Th>Trades</Th>
-              <Th>Avg Return %</Th>
-              <Th>Total Return %</Th>
-              <Th>Win Rate %</Th>
-              <Th>Max Win</Th>
-              <Th>Max Loss</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {stats.map(stat => (
-              <Tr key={stat.dayIndex}>
-                <Td fontWeight="bold">{stat.dayOfWeek}</Td>
-                <Td>{stat.tradeCount}</Td>
-                <Td>
-                  <Badge
-                    colorScheme={
-                      stat.averageReturnPercent > 0
-                        ? 'green'
-                        : stat.averageReturnPercent < 0
-                        ? 'red'
-                        : 'gray'
-                    }
-                  >
-                    {stat.averageReturnPercent.toFixed(2)}%
-                  </Badge>
-                </Td>
+        
+        {/* Mobile View */}
+        <VStack spacing={4} display={{ base: 'flex', md: 'none' }} align="stretch">
+          {stats.map(stat => (
+            <Card key={stat.dayIndex} variant="outline" bg={useColorModeValue('gray.50', 'gray.700')}>
+              <CardBody p={4}>
+                <VStack align="stretch" spacing={3}>
+                  <HStack justify="space-between">
+                    <Text fontWeight="bold">{stat.dayOfWeek}</Text>
+                    <Badge
+                      colorScheme={
+                        stat.averageReturnPercent > 0
+                          ? 'green'
+                          : stat.averageReturnPercent < 0
+                          ? 'red'
+                          : 'gray'
+                      }
+                    >
+                      {stat.averageReturnPercent.toFixed(2)}% Avg
+                    </Badge>
+                  </HStack>
+                  
+                  <SimpleGrid columns={2} spacing={2} fontSize="sm">
+                    <Text color="gray.500">Trades:</Text>
+                    <Text textAlign="right">{stat.tradeCount}</Text>
+                    
+                    <Text color="gray.500">Total Return:</Text>
+                    <Text textAlign="right" fontWeight="bold" color={stat.totalReturnPercent > 0 ? 'green.500' : 'red.500'}>
+                      {stat.totalReturnPercent.toFixed(2)}%
+                    </Text>
+                    
+                    <Text color="gray.500">Win Rate:</Text>
+                    <Text textAlign="right">{stat.winRate.toFixed(1)}%</Text>
+                    
+                    <Text color="gray.500">Max Win:</Text>
+                    <Text textAlign="right" color="green.500">+{stat.largestWinPercent.toFixed(2)}%</Text>
+                    
+                    <Text color="gray.500">Max Loss:</Text>
+                    <Text textAlign="right" color="red.500">{stat.largestLossPercent.toFixed(2)}%</Text>
+                  </SimpleGrid>
+                </VStack>
+              </CardBody>
+            </Card>
+          ))}
+        </VStack>
+
+        {/* Desktop View */}
+        <Box overflowX="auto" display={{ base: 'none', md: 'block' }}>
+          <Table size="sm">
+            <Thead>
+              <Tr bg={headerBg}>
+                <Th>Day</Th>
+                <Th>Trades</Th>
+                <Th>Avg Return %</Th>
+                <Th>Total Return %</Th>
+                <Th>Win Rate %</Th>
+                <Th>Max Win</Th>
+                <Th>Max Loss</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {stats.map(stat => (
+                <Tr key={stat.dayIndex}>
+                  <Td fontWeight="bold">{stat.dayOfWeek}</Td>
+                  <Td>{stat.tradeCount}</Td>
+                  <Td>
+                    <Badge
+                      colorScheme={
+                        stat.averageReturnPercent > 0
+                          ? 'green'
+                          : stat.averageReturnPercent < 0
+                          ? 'red'
+                          : 'gray'
+                      }
+                    >
+                      {stat.averageReturnPercent.toFixed(2)}%
+                    </Badge>
+                  </Td>
                 <Td>
                   <Badge
                     colorScheme={
@@ -126,6 +179,7 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
             ))}
           </Tbody>
         </Table>
+        </Box>
       </VStack>
     </VStack>
   )

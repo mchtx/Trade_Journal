@@ -119,7 +119,7 @@ export default function Settings() {
               </Text>
             </Box>
 
-            <SimpleGrid columns={2} spacing={4}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <Button
                 colorScheme="blue"
                 onClick={handleExportJSON}
