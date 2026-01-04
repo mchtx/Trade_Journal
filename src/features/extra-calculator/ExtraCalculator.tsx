@@ -341,9 +341,20 @@ export default function ExtraCalculator() {
 
         {/* Grafik ve Geçmiş - Tab'lar */}
         <Tabs colorScheme="blue" variant="soft-rounded">
-          <TabList>
-            <Tab>📈 Grafik</Tab>
-            <Tab>📊 Geçmiş Hesaplamalar</Tab>
+          <TabList overflowX="auto" pb={2} css={{
+            '&::-webkit-scrollbar': {
+              height: '4px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: useColorModeValue('rgba(0,0,0,0.1)', 'rgba(255,255,255,0.1)'),
+              borderRadius: '4px',
+            },
+          }}>
+            <Tab whiteSpace="nowrap">📈 Grafik</Tab>
+            <Tab whiteSpace="nowrap">📊 Geçmiş Hesaplamalar</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>

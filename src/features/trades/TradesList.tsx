@@ -3,6 +3,7 @@ import {
   Button,
   VStack,
   HStack,
+  Stack,
   Table,
   Thead,
   Tbody,
@@ -26,6 +27,8 @@ import {
   Text,
   Icon,
   useColorModeValue,
+  SimpleGrid,
+  Flex,
 } from '@chakra-ui/react'
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom'
@@ -78,7 +81,7 @@ export default function TradesList() {
 
   return (
     <VStack spacing={6} align="stretch">
-      <HStack justify="space-between" align="center">
+      <Stack direction={{ base: 'column', md: 'row' }} justify="space-between" align={{ base: 'start', md: 'center' }} spacing={4}>
         <Heading size="lg" letterSpacing="tight">İŞLEM GEÇMİŞİ</Heading>
         <Button
           leftIcon={<AddIcon />}
@@ -86,23 +89,25 @@ export default function TradesList() {
           size="md"
           onClick={() => navigate('/trades/new')}
           boxShadow="0 0 15px rgba(56, 189, 248, 0.3)"
+          w={{ base: 'full', md: 'auto' }}
         >
           YENİ GİRİŞ
         </Button>
-      </HStack>
+      </Stack>
 
       {/* Filters */}
       <Card variant="outline" borderWidth="0px" bg={filterBg}>
         <CardBody py={4}>
-          <HStack spacing={4} flexWrap="wrap">
+          <Stack direction={{ base: 'column', md: 'row' }} spacing={4} flexWrap="wrap">
             <HStack color={filterLabelColor}>
               <Icon as={FiFilter} />
               <Text fontSize="sm" fontWeight="bold">FİLTRELER:</Text>
             </HStack>
+            <SimpleGrid columns={{ base: 2, md: 4 }} spacing={2} w={{ base: 'full', md: 'auto' }} flex={1}>
             <Input
               placeholder="SEMBOL ARA..."
               size="sm"
-              w="180px"
+              w="full"
               value={filters.symbol || ''}
               onChange={e => setFilters({ ...filters, symbol: e.target.value })}
               fontFamily="mono"
@@ -111,7 +116,7 @@ export default function TradesList() {
             <Select
               placeholder="YÖN"
               size="sm"
-              w="140px"
+              w="full"
               value={filters.direction || ''}
               onChange={e => setFilters({ ...filters, direction: e.target.value as 'long' | 'short' || undefined })}
               fontFamily="mono"
@@ -124,7 +129,7 @@ export default function TradesList() {
             <Select
               placeholder="STRATEJİ"
               size="sm"
-              w="180px"
+              w="full"
               value={filters.strategyTag || ''}
               onChange={e => setFilters({ ...filters, strategyTag: e.target.value || undefined })}
               fontFamily="mono"
@@ -143,15 +148,108 @@ export default function TradesList() {
               onClick={() => setFilters({})}
               color="gray.400"
               _hover={{ color: useColorModeValue('brand.600', 'white') }}
+              w="full"
             >
               SIFIRLA
             </Button>
-          </HStack>
+            </SimpleGrid>
+          </Stack>
         </CardBody>
       </Card>
 
-      {/* Table */}
-      <Card overflow="hidden">
+      {/* Mobile View */}
+      <VStack spacing={4} display={{ base: 'flex', md: 'none' }} align="stretch">
+        {filteredTrades.map((trade, index) => {
+          const netPnL = calculateNetPnL(
+            trade.direction,
+            trade.entryPrice,
+            trade.exitPrice,
+            trade.positionSize || 0
+          )
+          const rrRatio = calculateRealizedRR(
+            trade.entryPrice,
+            trade.exitPrice,
+            trade.stopLoss
+          )
+          const isWin = netPnL > 0
+          const isLoss = netPnL < 0
+
+          return (
+            <Card key={trade.id} variant="outline" bg={useColorModeValue('white', 'gray.800')}>
+              <CardBody>
+                <VStack align="stretch" spacing={3}>
+                  <HStack justify="space-between">
+                    <HStack>
+                      <Text fontWeight="bold" color={useColorModeValue('gray.800', 'white')}>{trade.symbol}</Text>
+                      <Badge 
+                        bg={trade.direction === 'long' ? useColorModeValue('green.100', 'green.900') : useColorModeValue('red.100', 'red.900')} 
+                        color={trade.direction === 'long' ? useColorModeValue('green.800', 'green.200') : useColorModeValue('red.800', 'red.200')}
+                        px={2}
+                        py={0.5}
+                        borderRadius="md"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <Icon as={trade.direction === 'long' ? FiArrowUp : FiArrowDown} mr={1} />
+                        {trade.direction === 'long' ? 'LONG' : 'SHORT'}
+                      </Badge>
+                    </HStack>
+                    <Text fontSize="xs" color="gray.400" fontFamily="mono">
+                      {format(parseISO(trade.entryTime), 'dd.MM.yyyy')}
+                    </Text>
+                  </HStack>
+
+                  <SimpleGrid columns={2} spacing={2} fontSize="sm">
+                    <Text color="gray.500">Giriş:</Text>
+                    <Text fontFamily="mono" textAlign="right">{trade.entryPrice}</Text>
+                    
+                    <Text color="gray.500">Çıkış:</Text>
+                    <Text fontFamily="mono" textAlign="right">{trade.exitPrice}</Text>
+                    
+                    <Text color="gray.500">K/Z:</Text>
+                    <Text fontFamily="mono" textAlign="right" fontWeight="bold" color={netPnL > 0 ? 'trade.profit' : netPnL < 0 ? 'trade.loss' : 'gray.400'}>
+                      {netPnL > 0 ? '+' : ''}{netPnL.toFixed(2)}
+                    </Text>
+                  </SimpleGrid>
+
+                  <HStack justify="space-between" pt={2} borderTopWidth="1px" borderColor={useColorModeValue('gray.100', 'gray.700')}>
+                    <Badge 
+                      variant="subtle" 
+                      colorScheme={isWin ? 'green' : isLoss ? 'red' : 'gray'}
+                      fontSize="xs"
+                    >
+                      {isWin ? 'KAZANÇ' : isLoss ? 'KAYIP' : 'BAŞABAŞ'}
+                    </Badge>
+                    <HStack>
+                      <IconButton
+                        aria-label="Edit"
+                        icon={<FiEdit2 />}
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => navigate(`/trades/${trade.id}/edit`)}
+                      />
+                      <IconButton
+                        aria-label="Delete"
+                        icon={<FiTrash2 />}
+                        size="sm"
+                        variant="ghost"
+                        colorScheme="red"
+                        onClick={() => {
+                          setSelectedTradeId(trade.id)
+                          onOpen()
+                        }}
+                      />
+                    </HStack>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </Card>
+          )
+        })}
+      </VStack>
+
+      {/* Desktop Table */}
+      <Card overflow="hidden" display={{ base: 'none', md: 'block' }}>
         <Box overflowX="auto">
           <Table size="sm" variant="simple">
             <Thead bg={tableHeaderBg}>

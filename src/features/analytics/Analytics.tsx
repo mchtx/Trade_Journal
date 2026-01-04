@@ -35,12 +35,24 @@ export default function Analytics() {
       <Heading size="lg" letterSpacing="tight">ADVANCED ANALYTICS</Heading>
 
       <Tabs variant="soft-rounded" colorScheme="brand" isLazy>
-        <TabList mb={4}>
+        <TabList mb={4} overflowX="auto" pb={2} css={{
+          '&::-webkit-scrollbar': {
+            height: '4px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: useColorModeValue('rgba(0,0,0,0.1)', 'rgba(255,255,255,0.1)'),
+            borderRadius: '4px',
+          },
+        }}>
           <Tab 
             color={tabColor} 
             _selected={{ color: selectedColor, bg: selectedBg }}
             mr={2}
             fontWeight="medium"
+            whiteSpace="nowrap"
           >
             DAILY PERFORMANCE
           </Tab>
@@ -49,6 +61,7 @@ export default function Analytics() {
             _selected={{ color: selectedColor, bg: selectedBg }}
             mr={2}
             fontWeight="medium"
+            whiteSpace="nowrap"
           >
             OPTIMAL EXIT
           </Tab>
@@ -56,6 +69,7 @@ export default function Analytics() {
             color={tabColor} 
             _selected={{ color: selectedColor, bg: selectedBg }}
             fontWeight="medium"
+            whiteSpace="nowrap"
           >
             RISK DISTRIBUTION
           </Tab>

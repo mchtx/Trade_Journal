@@ -17,6 +17,7 @@ import {
   Badge,
   Icon,
   useColorModeValue,
+  Stack,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useTradeStore } from '@context/store'
@@ -53,7 +54,7 @@ export default function Dashboard() {
   return (
     <VStack spacing={6} align="stretch">
       {/* Header Section */}
-      <HStack justify="space-between" align="center">
+      <Stack direction={{ base: 'column', md: 'row' }} justify="space-between" align={{ base: 'start', md: 'center' }} spacing={4}>
         <VStack align="start" spacing={1}>
           <Heading size="lg" letterSpacing="tight">PİYASA GENEL BAKIŞ</Heading>
           <HStack>
@@ -64,7 +65,7 @@ export default function Dashboard() {
           </HStack>
         </VStack>
         
-        <HStack spacing={2} bg={periodBg} p={1} borderRadius="lg">
+        <HStack spacing={2} bg={periodBg} p={1} borderRadius="lg" w={{ base: 'full', md: 'auto' }} overflowX="auto">
           {(['week', 'month', 'all'] as const).map((p) => (
             <Button
               key={p}
@@ -74,12 +75,13 @@ export default function Dashboard() {
               onClick={() => setPeriod(p)}
               fontSize="xs"
               textTransform="uppercase"
+              flex={{ base: 1, md: 'initial' }}
             >
               {p === 'week' ? 'Hafta' : p === 'month' ? 'Ay' : 'Tüm Zamanlar'}
             </Button>
           ))}
         </HStack>
-      </HStack>
+      </Stack>
 
       {/* Primary Stats - High Hierarchy */}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>

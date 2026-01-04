@@ -15,6 +15,10 @@ import {
   Spinner,
   Center,
   useToast,
+  Card,
+  CardBody,
+  VStack,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import { formatCurrency, formatPercent } from '@utils/compoundCalculations';
 import { useCalculatorStore } from '../../../context/store';
@@ -72,7 +76,63 @@ export default function ResultsHistory() {
         📊 Geçmiş Hesaplamalar
       </Heading>
 
-      <Box overflowX="auto">
+      {/* Mobile View */}
+      <VStack spacing={4} display={{ base: 'flex', md: 'none' }} align="stretch">
+        {results.map((result: any) => (
+          <Card key={result.id} variant="outline" bg={useColorModeValue('white', 'gray.800')}>
+            <CardBody>
+              <VStack align="stretch" spacing={3}>
+                <HStack justify="space-between">
+                  <Text fontSize="sm" color="gray.500">
+                    {new Date(result.created_at || '').toLocaleDateString('tr-TR')}
+                  </Text>
+                  <Button
+                    size="xs"
+                    colorScheme="red"
+                    variant="ghost"
+                    onClick={() => handleDelete(result.id)}
+                    isLoading={isLoading}
+                  >
+                    Sil
+                  </Button>
+                </HStack>
+                
+                <SimpleGrid columns={2} spacing={2} fontSize="sm">
+                  <Text color="gray.500">Başlangıç:</Text>
+                  <Text fontWeight="bold" textAlign="right">
+                    {formatCurrency(result.input.principal, result.input.currency)}
+                  </Text>
+
+                  <Text color="gray.500">Son Tutar:</Text>
+                  <Text fontWeight="bold" color="green.500" textAlign="right">
+                    {formatCurrency(result.finalBalance, result.input.currency)}
+                  </Text>
+
+                  <Text color="gray.500">Getiri %:</Text>
+                  <Text color="blue.500" textAlign="right">
+                    {formatPercent(result.totalReturnPercent)}
+                  </Text>
+
+                  <Text color="gray.500">Vade:</Text>
+                  <Text textAlign="right">
+                    {result.input.periodCount}{' '}
+                    {result.input.returnPeriod === 'weekly'
+                      ? 'Hafta'
+                      : result.input.returnPeriod === 'monthly'
+                      ? 'Ay'
+                      : result.input.returnPeriod === 'quarterly'
+                      ? '3 Ay'
+                      : 'Yıl'}
+                  </Text>
+                </SimpleGrid>
+              </VStack>
+            </CardBody>
+          </Card>
+        ))}
+      </VStack>
+
+      {/* Desktop View */}
+      <Box overflowX="auto" display={{ base: 'none', md: 'block' }}>
         <Table size="sm" variant="simple">
           <Thead>
             <Tr bg={rowBg}>

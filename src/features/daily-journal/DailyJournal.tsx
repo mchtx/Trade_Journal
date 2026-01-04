@@ -20,6 +20,8 @@ import {
   Badge,
   Input,
   useColorModeValue,
+  Stack,
+  Text,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { format, parseISO, addDays, subDays } from 'date-fns'
@@ -63,28 +65,29 @@ export default function DailyJournal() {
       <Heading>DAILY JOURNAL</Heading>
 
       {/* Tarih Seçimi */}
-      <HStack spacing={4}>
-        <Button onClick={handlePrevDay} variant="outline">
-          ← PREVIOUS DAY
-        </Button>
+      <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ base: 'stretch', md: 'center' }}>
+        <HStack justify="space-between">
+          <Button onClick={handlePrevDay} variant="outline" flex={1}>
+            ← PREV
+          </Button>
+          <Button onClick={handleNextDay} variant="outline" flex={1}>
+            NEXT →
+          </Button>
+        </HStack>
 
         <Input
           type="date"
           value={selectedDate}
           onChange={e => setSelectedDate(e.target.value)}
-          maxW="200px"
+          maxW={{ base: 'full', md: '200px' }}
         />
 
-        <Button onClick={handleNextDay} variant="outline">
-          NEXT DAY →
-        </Button>
-
-        <Box flex={1}>
+        <Box flex={1} textAlign={{ base: 'center', md: 'left' }}>
           <Heading size="md">
             {format(parseISO(selectedDate), 'EEEE, dd MMMM yyyy')}
           </Heading>
         </Box>
-      </HStack>
+      </Stack>
 
       {/* Günlük Özet Kartları */}
       <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
@@ -148,7 +151,64 @@ export default function DailyJournal() {
             <Heading size="md" mb={4}>
               {dailySummary.tradeCount} İşlem
             </Heading>
-            <Box overflowX="auto">
+
+            {/* Mobile View */}
+            <VStack spacing={4} display={{ base: 'flex', md: 'none' }} align="stretch">
+              {dayTrades.map((trade) => {
+                const metrics = calculateTradeMetrics(trade)
+                return (
+                  <Card key={trade.id} variant="outline" bg={useColorModeValue('gray.50', 'gray.700')}>
+                    <CardBody p={4}>
+                      <VStack align="stretch" spacing={3}>
+                        <HStack justify="space-between">
+                          <Text fontWeight="bold">{trade.symbol}</Text>
+                          <Badge colorScheme={trade.direction === 'long' ? 'green' : 'red'}>
+                            {trade.direction === 'long' ? 'LONG' : 'SHORT'}
+                          </Badge>
+                        </HStack>
+                        
+                        <SimpleGrid columns={2} spacing={2} fontSize="sm">
+                          <Text color="gray.500">Giriş:</Text>
+                          <Text textAlign="right">{trade.entryPrice.toFixed(4)}</Text>
+                          
+                          <Text color="gray.500">Çıkış:</Text>
+                          <Text textAlign="right">{trade.exitPrice.toFixed(4)}</Text>
+                          
+                          <Text color="gray.500">Getiri:</Text>
+                          <Badge
+                            w="fit-content"
+                            justifySelf="end"
+                            colorScheme={
+                              metrics.result === 'win'
+                                ? 'green'
+                                : metrics.result === 'loss'
+                                ? 'red'
+                                : 'gray'
+                            }
+                          >
+                            {metrics.tradeReturnPercent.toFixed(2)}%
+                          </Badge>
+                          
+                          <Text color="gray.500">R:R:</Text>
+                          <Text textAlign="right">1:{metrics.riskRewardRatio.toFixed(2)}</Text>
+                        </SimpleGrid>
+                        
+                        {trade.notes && (
+                          <Box pt={2} borderTopWidth="1px" borderColor={useColorModeValue('gray.200', 'gray.600')}>
+                            <Text fontSize="xs" color="gray.500" noOfLines={2}>
+                              {trade.notes}
+                            </Text>
+                          </Box>
+                        )}
+                      </VStack>
+                    </CardBody>
+                  </Card>
+                )
+              })}
+            </VStack>
+
+            {/* Desktop View */}
+            <Box overflowX="auto" display={{ base: 'none', md: 'block' }}>
               <Table size="sm">
                 <Thead>
                   <Tr bg={useColorModeValue('gray.100', 'gray.700')}>
