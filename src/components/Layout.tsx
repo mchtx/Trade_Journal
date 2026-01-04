@@ -25,7 +25,7 @@ import { useAuth } from '../context/AuthContext'
 const navItems = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'İşlemler', path: '/trades' },
-  { label: 'Analitik', path: '/analytics' },
+  { label: 'Analitık', path: '/analytics' },
   { label: 'Günlük', path: '/daily-journal' },
   { label: 'Kurallar', path: '/rules' },
   { label: '💰 Hesaplayıcı', path: '/calculator' },

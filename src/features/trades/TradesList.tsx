@@ -127,7 +127,7 @@ export default function TradesList() {
             </Select>
 
             <Select
-              placeholder="STRATEJİ"
+              placeholder="STRATEJ"
               size="sm"
               w="full"
               value={filters.strategyTag || ''}
