@@ -49,30 +49,30 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
       <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
         <VStack flex={1} p={4} bg={bestBg} borderRadius="md" align="stretch">
           <Heading size="sm" color={bestText}>
-            BEST DAY
+            EN İYİ GÜN
           </Heading>
           <Text fontSize="2xl" fontWeight="bold" color={bestText}>
             {best.dayOfWeek}
           </Text>
-          <Text color={bestSubText}>{best.averageReturnPercent.toFixed(2)}% Avg.</Text>
-          <Text color={bestSubText}>{best.winRate.toFixed(1)}% Win Rate</Text>
+          <Text color={bestSubText}>{best.averageReturnPercent.toFixed(2)}% Ort.</Text>
+          <Text color={bestSubText}>{best.winRate.toFixed(1)}% Kazanma Oranı</Text>
         </VStack>
 
         <VStack flex={1} p={4} bg={worstBg} borderRadius="md" align="stretch">
           <Heading size="sm" color={worstText}>
-            WORST DAY
+            EN KÖTÜ GÜN
           </Heading>
           <Text fontSize="2xl" fontWeight="bold" color={worstText}>
             {worst.dayOfWeek}
           </Text>
-          <Text color={worstSubText}>{worst.averageReturnPercent.toFixed(2)}% Avg.</Text>
-          <Text color={worstSubText}>{worst.winRate.toFixed(1)}% Win Rate</Text>
+          <Text color={worstSubText}>{worst.averageReturnPercent.toFixed(2)}% Ort.</Text>
+          <Text color={worstSubText}>{worst.winRate.toFixed(1)}% Kazanma Oranı</Text>
         </VStack>
       </Stack>
 
       {/* Detailed Table */}
       <VStack align="stretch">
-        <Heading size="md">WEEKLY BREAKDOWN</Heading>
+        <Heading size="md">HAFTALIK DETAY</Heading>
         
         {/* Mobile View */}
         <VStack spacing={4} display={{ base: 'flex', md: 'none' }} align="stretch">
@@ -91,26 +91,26 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
                           : 'gray'
                       }
                     >
-                      {stat.averageReturnPercent.toFixed(2)}% Avg
+                      {stat.averageReturnPercent.toFixed(2)}% Ort
                     </Badge>
                   </HStack>
                   
                   <SimpleGrid columns={2} spacing={2} fontSize="sm">
-                    <Text color="gray.500">Trades:</Text>
+                    <Text color="gray.500">İşlem Sayısı:</Text>
                     <Text textAlign="right">{stat.tradeCount}</Text>
                     
-                    <Text color="gray.500">Total Return:</Text>
+                    <Text color="gray.500">Toplam Getiri:</Text>
                     <Text textAlign="right" fontWeight="bold" color={stat.totalReturnPercent > 0 ? 'green.500' : 'red.500'}>
                       {stat.totalReturnPercent.toFixed(2)}%
                     </Text>
                     
-                    <Text color="gray.500">Win Rate:</Text>
+                    <Text color="gray.500">Kazanma Oranı:</Text>
                     <Text textAlign="right">{stat.winRate.toFixed(1)}%</Text>
                     
-                    <Text color="gray.500">Max Win:</Text>
+                    <Text color="gray.500">Max Kazanç:</Text>
                     <Text textAlign="right" color="green.500">+{stat.largestWinPercent.toFixed(2)}%</Text>
                     
-                    <Text color="gray.500">Max Loss:</Text>
+                    <Text color="gray.500">Max Kayıp:</Text>
                     <Text textAlign="right" color="red.500">{stat.largestLossPercent.toFixed(2)}%</Text>
                   </SimpleGrid>
                 </VStack>
@@ -124,13 +124,13 @@ export default function WeekDayAnalyticsView({ stats }: Props) {
           <Table size="sm">
             <Thead>
               <Tr bg={headerBg}>
-                <Th>Day</Th>
-                <Th>Trades</Th>
-                <Th>Avg Return %</Th>
-                <Th>Total Return %</Th>
-                <Th>Win Rate %</Th>
-                <Th>Max Win</Th>
-                <Th>Max Loss</Th>
+                <Th>Gün</Th>
+                <Th>İşlem Sayısı</Th>
+                <Th>Ort. Getiri %</Th>
+                <Th>Toplam Getiri %</Th>
+                <Th>Kazanma Oranı %</Th>
+                <Th>Max Kazanç</Th>
+                <Th>Max Kayıp</Th>
               </Tr>
             </Thead>
             <Tbody>
